@@ -4,22 +4,33 @@ import minimist from 'minimist';
 import type ts from 'typescript';
 import type {ParsedArgs} from 'minimist';
 
-export function printUsage(): void {
-  const usageMessages = [
-    '\nUsage:',
-    '\ttsc-silent --project <path> [--compiler path] [--watch]',
-    '\nSynopsis:',
-    '\t--project     -p      Path to tsconfig.json',
-    '\t                      Default: tsconfig.json ',
-    '  --compiler    -c      Path to typescript.js.',
-    '                        Default: `./node_modules/typescript/lib/typescript.js`.',
-    '  --watch       -w      Run in watch mode.',
-    '\nDescription:',
-    'The purpose of this wrapper is to execute the Typescript compiler while suppressing all of',
-    "Typescript's error messages. This is useful during development, when compilation is required",
-    'for debugging but type errors are expected.\n',
-  ];
-  console.log(usageMessages.join('\n'));
+const version = '1.0.0';
+
+function printUsage(): void {
+  const defaultTsconfigPath = path.join(process.cwd(), 'tsconfig.json');
+  const defaultCompilerPath = path.join(
+    process.cwd(),
+    '/node_modules/typescript/lib/typescript.js'
+  );
+  const usageMessage = `
+tsc-suppress v${version}
+
+Usage:
+  tsc-suppress --project <path> [--compiler path] [--watch]
+
+Options:
+  -P, --project <path> \t Path to the project's tsconfig.json
+                       \t Default: ${defaultTsconfigPath}
+  -C, --compiler <path>\t Path to the project's typescript compiler
+                       \t Default: ${defaultCompilerPath}
+  -W, --watch          \t Run in watch mode
+
+Description:
+The purpose of this wrapper is to execute the Typescript compiler while suppressing all
+Typescript error messages. This is useful during development, when compilation is required
+for debugging but type errors are expected.
+`;
+  console.log(usageMessage);
 }
 
 printUsage();
@@ -53,7 +64,7 @@ async function main() {
   }
   const args = minimist(process.argv.slice(2), {
     string: ['compiler', 'project'],
-    boolean: ['watch', 'stats', 'help', 'suppress'],
+    boolean: ['watch', 'help'],
     alias: {
       c: 'compiler',
       p: 'project',
@@ -63,7 +74,6 @@ async function main() {
     default: {
       compiler: 'node_modules/typescript/lib/typescript.js',
       watch: false,
-      stats: false,
       help: false,
     },
   }) as Argv;
@@ -79,7 +89,7 @@ async function main() {
   }
 
   if (args._.length > 2) {
-    console.warn()
+    console.warn();
   }
 
   // if (!args.project) {
@@ -178,4 +188,4 @@ async function main() {
   }
 }
 
-main().catch(console.error);
+// main().catch(console.error);
