@@ -2,7 +2,7 @@
   "env": {
     "NODE_ENV": "development"
   },
-  "exec": "ts-node -T --emit -P tsconfig.json",
+  "exec": "ts-node -T -P tsconfig.json",
   "ext": "ts, tsx, js, jsx, json",
   "ignore": [
     ".git",
