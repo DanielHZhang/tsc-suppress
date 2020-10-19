@@ -5,13 +5,11 @@ import type ts from 'typescript';
 import type {ParsedArgs} from 'minimist';
 
 const version = '1.0.0';
+const workingDir = process.cwd();
+const defaultTsconfigPath = path.join(workingDir, 'tsconfig.json');
+const defaultCompilerPath = path.join(workingDir, 'node_modules/typescript/lib/typescript.js');
 
 function printUsage(): void {
-  const defaultTsconfigPath = path.join(process.cwd(), 'tsconfig.json');
-  const defaultCompilerPath = path.join(
-    process.cwd(),
-    '/node_modules/typescript/lib/typescript.js'
-  );
   const usageMessage = `
 tsc-suppress v${version}
 
@@ -32,8 +30,6 @@ for debugging but type errors are expected.
 `;
   console.log(usageMessage);
 }
-
-printUsage();
 
 function assertDiagnostics(
   diagnostics: ts.Diagnostic[] | ts.Diagnostic | undefined,
@@ -72,7 +68,8 @@ async function main() {
       h: 'help',
     },
     default: {
-      compiler: 'node_modules/typescript/lib/typescript.js',
+      compiler: defaultCompilerPath,
+      project: defaultTsconfigPath,
       watch: false,
       help: false,
     },
