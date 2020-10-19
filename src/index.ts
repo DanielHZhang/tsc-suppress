@@ -25,9 +25,9 @@ Options:
   -W, --watch          \t Run in watch mode
 
 Description:
-The purpose of this wrapper is to execute the Typescript compiler while suppressing all
-Typescript error messages. This is useful during development, when compilation is required
-for debugging but type errors are expected.
+This wrapper executes the Typescript compiler while suppressing all Typescript error messages.
+This is useful during development when successful compilation is required for debugging but
+type errors are expected.
 `;
   console.log(usageMessage);
 }
