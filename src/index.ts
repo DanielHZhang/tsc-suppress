@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import minimist from 'minimist';
+import chalk from 'chalk';
 import type ts from 'typescript';
 import type {ParsedArgs} from 'minimist';
 
@@ -11,10 +12,10 @@ const defaultCompilerPath = path.join(workingDir, 'node_modules/typescript/lib/t
 
 function printUsage(): void {
   const usageMessage = `
-tsc-suppress v${version}
+${chalk.bold(`tsc-suppress v${version}`)}
 
 Usage:
-  tsc-suppress --project <path> [--compiler path] [--watch]
+  tsc-suppress [options]
 
 Options:
   -P, --project <path> \t Path to the project's tsconfig.json
@@ -60,19 +61,43 @@ async function main() {
     process.exit(0);
   }
 
-  console.log(`tsc-suppress v${version}`);
+  const info = chalk.blue('info');
+  const warning = chalk.yellow('warning');
+  const error = chalk.red('error');
 
-  if (args._.length > 2) {
-    console.warn(`Unknown CLI options received: ${args._.join(', ')}`);
-  }
-
+  // Resolve typescript import
   const compilerPath = path.resolve(args.compiler);
   const compiler: typeof ts = await import(compilerPath);
 
-  console.log(`Using Typescript v${compiler.version}`);
-  console.log(`\tCompiler: ${compilerPath}`);
-  console.log(`\tProject: ${args.project}`);
+  // Ensure compiler path resolves to the typescript compiler
+  if (
+    !compiler ||
+    typeof compiler.version !== 'string' ||
+    typeof compiler.sys !== 'object' ||
+    typeof compiler.createProgram !== 'function'
+  ) {
+    console.error(`${error} Cannot find Typescript compiler at: ${compilerPath}`);
+    process.exit(1);
+  }
 
+  // Display runtime messages
+  console.log(chalk.bold(`tsc-suppress v${version}`));
+  console.log(`${info} Using Typescript v${compiler.version}`);
+  console.log(`     Compiler: ${compilerPath}`);
+  console.log(`     Project: ${args.project}\n`);
+
+  if (args._.length > 2) {
+    console.warn(`${warning} Unknown CLI options received: ${args._.join(', ')}\n`);
+  }
+
+  const printSuppression = (numErrors: number): void => {
+    if (numErrors > 0) {
+      console.warn(`${warning} Suppressed Typescript errors: ${numErrors}`);
+    } else {
+      console.log(`${info} No Typescript errors found.`);
+    }
+    console.log(`${info} Compilation completed successfully.`);
+  };
   const host: ts.FormatDiagnosticsHost = {
     getCanonicalFileName: (filename: string) => filename,
     getCurrentDirectory: compiler.sys.getCurrentDirectory,
@@ -91,6 +116,7 @@ async function main() {
     console.log(compiler.formatDiagnosticsWithColorAndContext(diagnostics, host));
   };
 
+  // Parse tsconfig.json
   const tsconfigJsonRaw = fs.readFileSync(args.project).toString();
   const configObject = compiler.parseConfigFileTextToJson(args.project, tsconfigJsonRaw);
   const configParseResult = compiler.parseJsonConfigFileContent(
@@ -100,6 +126,12 @@ async function main() {
     undefined,
     args.project
   );
+
+  if (configParseResult.options.noEmitOnError) {
+    console.warn(
+      `${warning} No files will be emitted even if errors are suppressed when "compilerOptions.noEmitOnError: true"`
+    );
+  }
 
   if (args.watch) {
     // Only assert config parse errors when watching
@@ -128,9 +160,8 @@ async function main() {
           watchDiagnostics.push(diagnostic);
 
           assertDiagnostics(watchDiagnostics);
-
-          console.warn(`[tsc-suppress] Suppressed typescript errors: ${watchDiagnostics.length}`);
-          console.log('[tsc-suppress] Watching for file changes...');
+          printSuppression(watchDiagnostics.length);
+          console.log(`${info} Watching for file changes...`);
         }
       }
     );
@@ -145,10 +176,15 @@ async function main() {
       configFileParsingDiagnostics: compiler.getConfigFileParsingDiagnostics(configParseResult),
     });
     const emitResult = program.emit();
-    const allDiagnostics = compiler.getPreEmitDiagnostics(program).concat(emitResult.diagnostics);
+    const diagnostics = [...compiler.getPreEmitDiagnostics(program)]; // Shallow copy to remove readonly
 
-    assertDiagnostics(allDiagnostics);
-    console.warn(`[tsc-suppress] Suppressed typescript errors: ${allDiagnostics.length}`);
+    if (!emitResult.emitSkipped) {
+      // Only append emit diagnostics if the emit was successful
+      diagnostics.push(...emitResult.diagnostics);
+    }
+
+    assertDiagnostics(diagnostics);
+    printSuppression(diagnostics.length);
   }
 }
 
