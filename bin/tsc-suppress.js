@@ -1,3 +1,4 @@
 #!/usr/bin/env node
 
-require('../dist/index');
+const tsc = require('../dist/index');
+tsc().catch(console.error);

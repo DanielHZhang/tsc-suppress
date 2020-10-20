@@ -1,11 +1,12 @@
 import fs from 'fs';
 import path from 'path';
-import minimist from 'minimist';
+import assert from 'assert';
 import chalk from 'chalk';
+import minimist from 'minimist';
 import type ts from 'typescript';
 import type {ParsedArgs} from 'minimist';
 
-const version = '1.0.0';
+const version = '1.0.2';
 const workingDir = process.cwd();
 const defaultTsconfigPath = path.join(workingDir, 'tsconfig.json');
 const defaultCompilerPath = path.join(workingDir, 'node_modules/typescript/lib/typescript.js');
@@ -32,29 +33,48 @@ type errors are expected.
   console.log(usageMessage);
 }
 
-async function main() {
-  interface Argv extends ParsedArgs {
-    compiler: string;
-    project: string;
-    watch: boolean;
-    help: boolean;
+type Argv = {
+  compiler: string;
+  project: string;
+  watch: boolean;
+  help: boolean;
+  _?: string[];
+};
+
+export = async function tsc(args?: Argv): Promise<void> {
+  const defaultArgs: Argv = {
+    compiler: defaultCompilerPath,
+    project: defaultTsconfigPath,
+    watch: false,
+    help: false,
+  };
+
+  if (args) {
+    // Validate args if used programmatically
+    if (args.compiler) {
+      assert(typeof args.compiler === 'string', 'Option "compiler" must be of type string');
+    }
+    if (args.project) {
+      assert(typeof args.project === 'string', 'Option "project" must be of type string');
+    }
+    if (args.watch) {
+      assert(typeof args.watch === 'boolean', 'Option "watch" must be of type boolean');
+    }
+    args = Object.assign(defaultArgs, args);
+  } else {
+    // Parse and validate args if used via CLI
+    args = minimist(process.argv.slice(2), {
+      string: ['compiler', 'project'],
+      boolean: ['watch', 'help'],
+      alias: {
+        c: 'compiler',
+        p: 'project',
+        w: 'watch',
+        h: 'help',
+      },
+      default: defaultArgs,
+    }) as ParsedArgs & Argv;
   }
-  const args = minimist(process.argv.slice(2), {
-    string: ['compiler', 'project'],
-    boolean: ['watch', 'help'],
-    alias: {
-      c: 'compiler',
-      p: 'project',
-      w: 'watch',
-      h: 'help',
-    },
-    default: {
-      compiler: defaultCompilerPath,
-      project: defaultTsconfigPath,
-      watch: false,
-      help: false,
-    },
-  }) as Argv;
 
   if (args.help) {
     printUsage();
@@ -86,7 +106,7 @@ async function main() {
   console.log(`     Compiler: ${compilerPath}`);
   console.log(`     Project: ${args.project}\n`);
 
-  if (args._.length > 2) {
+  if (args._ && args._.length > 2) {
     console.warn(`${warning} Unknown CLI options received: ${args._.join(', ')}\n`);
   }
 
@@ -186,6 +206,4 @@ async function main() {
     assertDiagnostics(diagnostics);
     printSuppression(diagnostics.length);
   }
-}
-
-main().catch(console.error);
+};
