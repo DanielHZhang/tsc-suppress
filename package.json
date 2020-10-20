@@ -1,6 +1,6 @@
 {
   "name": "tsc-suppress",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Transpile-only for the Typescript compiler",
   "author": "Daniel Zhang",
   "license": "MIT",
