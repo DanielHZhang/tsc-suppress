@@ -1,7 +1,4 @@
-// Some file with typescript errors
+import path from 'path';
+import tsc from '../src/index';
 
-export function main(): string {
-  const wow = 'cool';
-  const aNumber = 2;
-  return aNumber + wow.length;
-}
+tsc({project: path.join(process.cwd(), 'tsconfig.json')}).catch(console.error);
