@@ -4,6 +4,10 @@
 	"description": "Run the Typescript compiler in transpile-only mode",
 	"author": "Daniel Zhang",
 	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/DanielHZhang/tsc-suppress/"
+	},
 	"main": "dist/index.js",
 	"types": "dist/index.d.ts",
 	"engines": {
@@ -27,9 +31,7 @@
 		"start": "nodemon src/index.ts",
 		"build": "rm -rf dist && tsc --project tsconfig.json",
 		"test": "yarn build && node ./bin/tsc-suppress.js --project tsconfig.test.json",
-		"prepublishOnly": "yarn build",
-		"version": "git add .",
-		"postversion": "git push && git push --tags"
+		"prepublishOnly": "yarn build"
 	},
 	"dependencies": {
 		"chalk": "^4.1.0",
