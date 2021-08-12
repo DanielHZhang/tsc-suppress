@@ -1,6 +1,6 @@
 {
 	"name": "tsc-suppress",
-	"version": "1.0.2",
+	"version": "1.0.3",
 	"description": "Run the Typescript compiler in transpile-only mode",
 	"author": "Daniel Zhang",
 	"license": "MIT",
