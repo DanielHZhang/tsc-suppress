@@ -1,54 +1,58 @@
 {
-  "name": "tsc-suppress",
-  "version": "1.0.2",
-  "description": "Run the Typescript compiler in transpile-only mode",
-  "author": "Daniel Zhang",
-  "license": "MIT",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "engines": {
-    "node": ">=6.0.0"
-  },
-  "files": [
-    "bin/**/*",
-    "dist/**/*"
-  ],
-  "bin": {
-    "tsc-suppress": "./bin/tsc-suppress.js"
-  },
-  "publishConfig": {
-    "access": "public"
-  },
-  "scripts": {
-    "start": "nodemon src/index.ts",
-    "build": "rm -rf dist && tsc --project tsconfig.json",
-    "test": "yarn build && node ./bin/tsc-suppress.js --project tsconfig.test.json",
-    "prepublishOnly": "yarn build",
-    "version": "git add .",
-    "postversion": "git push && git push --tags"
-  },
-  "dependencies": {
-    "chalk": "^4.1.0",
-    "minimist": "^1.2.5"
-  },
-  "devDependencies": {
-    "@supersede/eslint-config": "^1.0.1",
-    "@supersede/prettier-config": "^1.0.1",
-    "@types/minimist": "^1.2.0",
-    "@types/node": "^14.11.10",
-    "eslint": "^7.11.0",
-    "nodemon": "^2.0.5",
-    "prettier": "^2.1.2",
-    "ts-node": "^9.0.0",
-    "typescript": "^4.0.3"
-  },
-  "peerDependencies": {
-    "typescript": ">=3.0.0"
-  },
-  "keywords": [
-    "typescript",
-    "tsc",
-    "compiler",
-    "transpile-only"
-  ]
+	"name": "tsc-suppress",
+	"version": "1.0.2",
+	"description": "Run the Typescript compiler in transpile-only mode",
+	"author": "Daniel Zhang",
+	"license": "MIT",
+	"main": "dist/index.js",
+	"types": "dist/index.d.ts",
+	"engines": {
+		"node": ">=6.0.0"
+	},
+	"files": [
+		"bin/**/*",
+		"dist/**/*"
+	],
+	"bin": {
+		"tsc-suppress": "./bin/tsc-suppress.js"
+	},
+	"publishConfig": {
+		"access": "public"
+	},
+	"prettier": "@supersede/prettier-config",
+	"eslintConfig": {
+		"extends": "@supersede"
+	},
+	"scripts": {
+		"start": "nodemon src/index.ts",
+		"build": "rm -rf dist && tsc --project tsconfig.json",
+		"test": "yarn build && node ./bin/tsc-suppress.js --project tsconfig.test.json",
+		"prepublishOnly": "yarn build",
+		"version": "git add .",
+		"postversion": "git push && git push --tags"
+	},
+	"dependencies": {
+		"chalk": "^4.1.0",
+		"minimist": "^1.2.5"
+	},
+	"devDependencies": {
+		"@supersede/eslint-config": "^1.0.1",
+		"@supersede/prettier-config": "^1.0.1",
+		"@types/minimist": "^1.2.0",
+		"@types/node": "^14.11.10",
+		"eslint": "^7.11.0",
+		"nodemon": "^2.0.5",
+		"prettier": "^2.1.2",
+		"ts-node": "^9.0.0",
+		"typescript": "^4.0.3"
+	},
+	"peerDependencies": {
+		"typescript": ">=3.0.0"
+	},
+	"keywords": [
+		"typescript",
+		"tsc",
+		"compiler",
+		"transpile-only"
+	]
 }
