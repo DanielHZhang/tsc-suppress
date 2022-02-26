@@ -34,19 +34,19 @@
 		"prepublishOnly": "yarn build"
 	},
 	"dependencies": {
-		"chalk": "^4.1.0",
+		"chalk": "^5.0.0",
 		"minimist": "^1.2.5"
 	},
 	"devDependencies": {
-		"@supersede/eslint-config": "^1.0.1",
+		"@supersede/eslint-config": "^1.3.0",
 		"@supersede/prettier-config": "^1.0.1",
 		"@types/minimist": "^1.2.0",
-		"@types/node": "^16.6.1",
-		"eslint": "^7.11.0",
-		"nodemon": "^2.0.5",
-		"prettier": "^2.1.2",
-		"ts-node": "^10.2.0",
-		"typescript": "^4.0.3"
+		"@types/node": "^17.0.21",
+		"eslint": "^8.10.0",
+		"nodemon": "^2.0.15",
+		"prettier": "^2.5.1",
+		"ts-node": "^10.5.0",
+		"typescript": "^4.5.5"
 	},
 	"peerDependencies": {
 		"typescript": ">=3.0.0"
