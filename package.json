@@ -34,7 +34,7 @@
 		"prepublishOnly": "yarn build"
 	},
 	"dependencies": {
-		"chalk": "^4",
+		"chalk": "^5",
 		"minimist": "^1.2.5"
 	},
 	"devDependencies": {
